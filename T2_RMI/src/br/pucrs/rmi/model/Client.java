@@ -39,19 +39,25 @@ public class Client {
 
 				switch (opcao) {
 				case "ls":
-					Scanner input = new Scanner(System.in);
-					while (input.hasNext()) {
+					while (true) {
 						retorno = fs.ls(entrada.nextLine());
 						for (String arquivo : retorno) {
 							System.out.println("Arquivos: " + arquivo.toString());
 						}
+						break;
 					}
 					break;
 
 				case "mkdir":
 					break;
 
-				default:
+				default: 
+					if(opcao.startsWith("ls ")) {
+						retorno = fs.ls(opcao.split(" ")[1]);
+						for (String arquivo : retorno) {
+							System.out.println("Arquivos: " + arquivo.toString());
+						}
+					} else 
 					System.out.println("Opção inválida.");
 				}
 
