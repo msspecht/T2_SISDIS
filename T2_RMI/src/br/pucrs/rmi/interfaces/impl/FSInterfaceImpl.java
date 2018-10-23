@@ -13,7 +13,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.stream.Stream;
 
 import br.pucrs.rmi.interfaces.FSInterface;
 
@@ -27,12 +26,19 @@ public class FSInterfaceImpl extends UnicastRemoteObject implements FSInterface 
 
 	@Override
 	public String[] ls(String path) throws RemoteException {
-		try (Stream<Path> paths = Files.walk(Paths.get(BASEPATH))) {
-			paths.filter(Files::isRegularFile).forEach(System.out::println);
-		} catch (IOException e) {
+		String[] listaString = null;
+		try {
+			File directory = new File(path);
+
+			File[] fList = directory.listFiles();
+			listaString = new String[fList.length];
+			for (int i = 0; i < fList.length; i++) {
+				listaString[i] = fList[i].getName();
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return listaString;
 	}
 
 	@Override
@@ -76,8 +82,9 @@ public class FSInterfaceImpl extends UnicastRemoteObject implements FSInterface 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return 0;
 		}
-		return 0;
+		return 1;
 	}
 
 	@Override
