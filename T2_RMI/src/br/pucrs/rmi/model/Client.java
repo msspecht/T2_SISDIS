@@ -22,46 +22,55 @@ public class Client {
 
 		FSInterface fs = null;
 		try {
-			System.out.println("Connecting to client at : " + connectLocation);
 			fs = (FSInterface) Naming.lookup(connectLocation);
+			Menu();
 		} catch (Exception e) {
 			System.out.println ("Fs connection failed: ");
 			e.printStackTrace();
 		}
 
 		try {
-			String opcao;
 			Scanner entrada = new Scanner(System.in);
 
-			do {
-				Menu();
-				opcao = entrada.nextLine();
-
-				switch (opcao) {
-				case "ls":
-					while (true) {
-						retorno = fs.ls(entrada.nextLine());
-						for (String arquivo : retorno) {
-							System.out.println("Arquivos: " + arquivo.toString());
-						}
-						break;
+			while(entrada.hasNext()) {
+				String texto = entrada.nextLine();
+				
+				if(texto.startsWith("ls ")) {
+					retorno = fs.ls(texto.split(" ")[1]);
+					for (String arquivo : retorno) {
+						System.out.println("# " + arquivo.toString());
 					}
-					break;
-
-				case "mkdir":
-					break;
-
-				default: 
-					if(opcao.startsWith("ls ")) {
-						retorno = fs.ls(opcao.split(" ")[1]);
-						for (String arquivo : retorno) {
-							System.out.println("Arquivos: " + arquivo.toString());
-						}
-					} else 
-					System.out.println("Opção inválida.");
 				}
-
-			} while (!opcao.equalsIgnoreCase("exit"));
+				
+				if(texto.startsWith("mkdir ")) {
+					if(fs.mkdir(entrada.nextLine()) == 1) {
+						System.out.println("Pasta criada com sucesso!");
+					} else {
+						System.out.println("Erro ao criar a pasta!");
+					}
+				}
+				
+				if(texto.startsWith("create ")) {
+					if(fs.create(entrada.nextLine()) == 1) {
+						System.out.println("Arquivo criada com sucesso!");
+					} else {
+						System.out.println("Erro ao criar o arquivo!");
+					}
+				}
+				
+				if(texto.startsWith("unlink ")) {
+					if(fs.unlink(entrada.nextLine()) == 1) {
+						System.out.println("Arquivo removido com sucesso!");
+					} else {
+						System.out.println("Erro ao remover o arquivo!");
+					}
+				}
+				
+				if(texto.equalsIgnoreCase("exit")) {
+					System.out.println("Até Breve!");
+					System.exit(0);
+				}
+			}
 			
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -69,11 +78,12 @@ public class Client {
 	}
 	
 	public static void Menu() {
-		System.out.println("\tRMI Commander");
-		System.out.println("Digite:");
-		System.out.println("M - Lista Opcoes");
-		System.out.println("Exit  -> Sair");
-		System.out.println("ls    -> Listar arquivos Ex: ls /tmp");
-		System.out.println("mkdir -> Cria diretorio Ex: mkdir teste");
+		System.out.println("\tBem Vindo ao - RMI Commander");
+		System.out.println("Lista de Comandos:");
+		System.out.println("Exit   -> Sair");
+		System.out.println("ls     -> Listar arquivos Ex: ls ./tmp");
+		System.out.println("mkdir  -> Criar diretorio Ex: mkdir teste");
+		System.out.println("create -> Criar arquivos Ex: create ./arquivo.txt");
+		System.out.println("unlink -> Remove arquivos Ex: create ./arquivo.txt");
 	}
 }
